@@ -1,10 +1,22 @@
 import React, { useState } from "react";
+import { useParams } from "react-router-dom";
+import { useProduct } from "../api/fetchApi";
 
 const ProductDetailPage = () => {
   const [quantity, setQuantity] = useState(1);
 
   const increase = () => setQuantity(prev => prev + 1);
   const decrease = () => setQuantity(prev => (prev > 1 ? prev - 1 : 1));
+
+  const {id} = useParams()
+
+
+  const{data,isLoading,isError, error}= useProduct(id)
+
+  if(isLoading) return "loading..."
+  if(isError) return <p>{error.message}</p>
+
+  console.log(data);
 
   return (
     <div className="min-h-[90vh] flex items-center justify-center p-6">
@@ -13,8 +25,8 @@ const ProductDetailPage = () => {
         {/* Product Image */}
         <div className="md:w-1/2 flex items-center justify-center bg-slate-100">
           <img
-            src="https://i.imgur.com/Ex5x3IU.jpg"
-            alt="Product"
+            src={data.images[0]}
+            alt={data.title}
             className="w-full h-full object-cover rounded-l-3xl"
           />
         </div>
@@ -24,24 +36,22 @@ const ProductDetailPage = () => {
           <div className="space-y-4">
             {/* Title */}
             <h1 className="text-4xl font-extrabold text-slate-900">
-              Premium Headphones
+              {data.title}
             </h1>
 
             {/* Category */}
             <p className="text-slate-500 text-sm uppercase tracking-wide">
-              Electronics
+              {data.category.name}
             </p>
 
             {/* Price */}
             <p className="text-3xl font-semibold text-slate-900">
-              $199.99
+              ${data.price}
             </p>
 
             {/* Description */}
             <p className="text-slate-600 text-lg leading-relaxed">
-              Experience crystal clear sound with these premium over-ear headphones.
-              Designed for comfort and long listening sessions, with noise-cancellation
-              technology for an immersive audio experience.
+              {data.description}
             </p>
           </div>
 
